@@ -378,8 +378,25 @@
             opacity: 0.9;
             animation: pulse 2s ease-in-out infinite;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            font-weight: 500;
+            font-weight: 600;
             pointer-events: none;
+        }
+
+        .click-hint::before {
+            content: '👇';
+            display: block;
+            font-size: 24px;
+            animation: bounceDown 1s ease-in-out infinite;
+            margin-bottom: 5px;
+        }
+
+        @keyframes bounceDown {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(10px);
+            }
         }
 
         @keyframes pulse {
@@ -395,11 +412,16 @@
             position: absolute;
             width: 8px;
             height: 8px;
-            background: #ffd700;
             border-radius: 50%;
             pointer-events: none;
-            box-shadow: 0 0 10px #ffd700;
         }
+
+        .sparkle-color-1 { background: #ffd700; box-shadow: 0 0 10px #ffd700; }
+        .sparkle-color-2 { background: #ff69b4; box-shadow: 0 0 10px #ff69b4; }
+        .sparkle-color-3 { background: #00ced1; box-shadow: 0 0 10px #00ced1; }
+        .sparkle-color-4 { background: #ff1493; box-shadow: 0 0 10px #ff1493; }
+        .sparkle-color-5 { background: #ffd700; box-shadow: 0 0 10px #ffd700; }
+        .sparkle-color-6 { background: #9370db; box-shadow: 0 0 10px #9370db; }
 
         @keyframes sparkleFloat {
             0% {
@@ -550,7 +572,7 @@
                 <div class="envelope-seal">💌</div>
             </div>
         </div>
-        <div class="click-hint">Clicca sulla busta per aprirla ✨</div>
+        <div class="click-hint">Clicca sulla busta per aprirla</div>
     </div>
 
     <script>
@@ -583,7 +605,8 @@
 
         function createSparkle() {
             const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
+            const colors = ['sparkle-color-1', 'sparkle-color-2', 'sparkle-color-3', 'sparkle-color-4', 'sparkle-color-5', 'sparkle-color-6'];
+            sparkle.className = 'sparkle ' + colors[Math.floor(Math.random() * colors.length)];
             const x = Math.random() * window.innerWidth;
             const y = window.innerHeight / 2 + Math.random() * 100;
             sparkle.style.left = x + 'px';
@@ -599,18 +622,34 @@
 
         function createConfetti() {
             const colors = ['#ff6b9d', '#ffd700', '#ff8fab', '#c44569', '#f8b500'];
-            const confettiCount = 50;
+            const emojis = ['💕', '💖', '💗', '💝', '⭐', '✨', '💫', '🌟'];
+            const confettiCount = 80;
             
             for (let i = 0; i < confettiCount; i++) {
                 setTimeout(() => {
+                    const isEmoji = Math.random() > 0.5;
                     const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
+                    
+                    if (isEmoji) {
+                        confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                        confetti.style.fontSize = (20 + Math.random() * 15) + 'px';
+                        confetti.style.width = 'auto';
+                        confetti.style.height = 'auto';
+                        confetti.style.background = 'transparent';
+                    } else {
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.top = '-10px';
+                        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.width = (5 + Math.random() * 10) + 'px';
+                        confetti.style.height = (5 + Math.random() * 10) + 'px';
+                        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    }
+                    
+                    confetti.style.position = 'absolute';
                     confetti.style.left = Math.random() * 100 + '%';
                     confetti.style.top = '-10px';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = (5 + Math.random() * 10) + 'px';
-                    confetti.style.height = (5 + Math.random() * 10) + 'px';
-                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.pointerEvents = 'none';
                     confetti.style.animation = 'confettiFall ' + (2 + Math.random() * 2) + 's linear forwards';
                     confetti.style.animationDelay = Math.random() * 0.5 + 's';
                     document.body.appendChild(confetti);
@@ -618,15 +657,54 @@
                     setTimeout(() => {
                         confetti.remove();
                     }, 4000);
-                }, i * 30);
+                }, i * 20);
             }
         }
+
+        function createFloatingHeart() {
+            const hearts = ['💕', '💖', '💗', '💝', '❤️'];
+            const heart = document.createElement('div');
+            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.position = 'absolute';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.bottom = '-30px';
+            heart.style.fontSize = (20 + Math.random() * 15) + 'px';
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '5';
+            heart.style.animation = 'floatUp 4s ease-out forwards';
+            heart.style.opacity = '0.8';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 4000);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatUp {
+                0% {
+                    transform: translateY(0) translateX(0) rotate(0deg);
+                    opacity: 0.8;
+                }
+                100% {
+                    transform: translateY(calc(-100vh - 50px)) translateX(${Math.random() * 100 - 50}px) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
 
         for (let i = 0; i < 3; i++) {
             setTimeout(() => {
                 createSparkle();
             }, i * 800);
         }
+
+        // Crea cuori fluttuanti ogni 800ms
+        setInterval(() => {
+            createFloatingHeart();
+        }, 800);
     </script>
 </body>
 </html>
